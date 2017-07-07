@@ -1,0 +1,47 @@
+version: '2'
+services:
+  mariadb:
+    image: mariadb
+    volumes:
+      - ./mariadb/:/var/lib/mysql # bdd persistence
+    environment:
+      MYSQL_ROOT_PASSWORD: ContiPolr
+      MYSQL_DATABASE: homestead
+  pma:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      ALLOW_OVERRIDE: "true"
+      MYSQL_ROOT_PASSWORD: ContiPolr
+    depends_on:
+      - mariadb
+    links:
+      - mariadb:db
+  polr:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+        - polr-data:/var/www/polr/
+        - ./conf/polr.conf:/etc/nginx/conf.d/polr.template
+    depends_on:
+        - polr-fpm
+        - mariadb
+    environment:
+      SERVER_NAME: $POLR_SERVER_NAME
+      FPM_SERVER_IP: polr-fpm
+    command: /bin/bash -c "envsubst '$$SERVER_NAME $$FPM_SERVER_IP' < /etc/nginx/conf.d/polr.template > /etc/nginx/conf.d/default.conf && cat etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+  polr-fpm:
+    build:
+      context: docker-polr-fpm
+      dockerfile: Dockerfile
+      args:
+        http_proxy: ${docker_build_http_proxy}
+        https_proxy: ${docker_build_http_proxy}
+    volumes:
+      - ./conf/.env:/var/www/polr/.env
+      - polr-data:/var/www/polr/ # copy polr source code in polr-data volumes to share it with the nginx container
+
+volumes:
+  polr-data:
