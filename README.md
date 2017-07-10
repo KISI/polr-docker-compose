@@ -5,6 +5,8 @@ Very simple to use
 
 ```
 $ export POLR_SERVER_NAME="polr.example.com p.ex"
+$ export POLR_DB_PASSWD="example"
+$ export POLR_DB="polr"
 $ docker-compose up -d
 ```
 

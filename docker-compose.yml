@@ -5,15 +5,15 @@ services:
     volumes:
       - ./mariadb/:/var/lib/mysql # bdd persistence
     environment:
-      MYSQL_ROOT_PASSWORD: ContiPolr
-      MYSQL_DATABASE: homestead
+      MYSQL_ROOT_PASSWORD: $POLR_DB_PASSWD
+      MYSQL_DATABASE: $POLR_DB
   pma:
     image: phpmyadmin/phpmyadmin
     ports:
       - 8080:80
     environment:
       ALLOW_OVERRIDE: "true"
-      MYSQL_ROOT_PASSWORD: ContiPolr
+      MYSQL_ROOT_PASSWORD: $POLR_DB_PASSWD
     depends_on:
       - mariadb
     links:
