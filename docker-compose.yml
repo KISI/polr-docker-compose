@@ -33,6 +33,7 @@ services:
       FPM_SERVER_IP: polr-fpm
     command: /bin/bash -c "envsubst '$$SERVER_NAME $$FPM_SERVER_IP' < /etc/nginx/conf.d/polr.template > /etc/nginx/conf.d/default.conf && cat etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
   polr-fpm:
+    image: vixsty/polr-docker-compose
     build:
       context: docker-polr-fpm
       dockerfile: Dockerfile
